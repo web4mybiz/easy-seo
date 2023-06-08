@@ -1,7 +1,7 @@
 {
-	"name": "wp-media/package-template",
-	"description": "Repository template for our packages",
-	"homepage": "https://github.com/wp-media/package-template",
+	"name": "web4mybiz/easy-seo",
+	"description": "Simple plugin to improve review and improve SEO",
+	"homepage": "https://github.com/web4mybiz/easy-seo",
 	"license": "GPL-2.0+",
 	"authors": [
 		{
@@ -15,8 +15,8 @@
 		"sort-packages": true
 	},
 	"support": {
-		"issues": "https://github.com/wp-media/package-template/issues",
-		"source": "https://github.com/wp-media/package-template"
+		"issues": "https://github.com/web4mybiz/easy-seo/issues",
+		"source": "https://github.com/web4mybiz/easy-seo"
 	},
 	"require-dev": {
 		"php": "^5.6 || ^7",
