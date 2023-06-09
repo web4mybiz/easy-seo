@@ -14,3 +14,12 @@
  * Text Domain:       wpmedia-easy-seo
  * Domain Path:       /languages
  */
+
+
+defined('ABSPATH') or die('You are not authorized to view this page');
+
+require_once( dirname( __FILE__).'/inc/classes/admin/class-admin-options.php' );
+
+if( class_exists('EasySEOAdminOptions') ){
+	new EasySEOAdminOptions();
+}
