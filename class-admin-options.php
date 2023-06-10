@@ -20,6 +20,20 @@ class EasySEOAdminOptions{
 			// Execute trigger
 			$this->trigger_crawl();
 		}
+
+		// Easy SEO Crawler settings page
+        echo '<div class="wrap">';
+        echo '<h1>Crawler Settings</h1>';
+        echo '<form method="post" action="">';
+        echo '<p>Click the button below to trigger the crawl:</p>';
+        echo '<input type="submit" name="crawl_trigger" class="button button-primary" value="Trigger Crawl">';
+        echo '</form>';
+
+        // Display the crawl results
+        $this->display_results();
+
+        echo '</div>';
+
 	}
 
 	// Function that trigger the crawl process
@@ -69,12 +83,79 @@ class EasySEOAdminOptions{
     // Extract all internal hyperlinks (results)
     public function extract_hyperlinks( $url ) {
         // Implementation for extracting hyperlinks
-        return $results;
+        $home_url = $url;
+	    $internal_links = array();
+
+	    // Fetch the content of the home page
+	    $response = wp_remote_get( $home_url );
+	    if ( is_wp_error( $response ) ) {
+	        // Handle the error here
+	        return $internal_links;
+	    }
+
+	    // Retrieve the response body
+	    $body = wp_remote_retrieve_body( $response );
+
+	    // Create a DOM document
+	    $dom = new DOMDocument();
+	    libxml_use_internal_errors( true );
+
+	    // Load the HTML content into the DOM document
+	    $dom->loadHTML( $body );
+
+	    // Create a DOM XPath object to query the document
+	    $xpath = new DOMXPath( $dom );
+
+	    // Query all anchor tags with an href attribute
+	    $anchors = $xpath->query( '//a[@href]' );
+
+	    // Iterate through the anchor tags
+	    foreach ( $anchors as $anchor ) {
+	        $href = $anchor->getAttribute( 'href' );
+
+	        // Check if the href is an internal link
+	        if ( strpos( $href, $home_url ) === 0 ) {
+	            $internal_links[] = $href;
+	        }
+	    }
+
+	    return $internal_links;
+
     }
 
     // Store results temporarily in the database
-    public function store_results( $results ) {
+    public function store_results( $internal_links ) {
         // Implementation for storing results
+        global $wpdb;
+
+	    // Create a table name based on the WordPress database prefix
+	    $table_name = $wpdb->prefix . 'crawl_results';
+
+	    // Drop the table if it already exists (optional)
+	    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+
+	    // Create the table to store the crawl results
+	    $charset_collate = $wpdb->get_charset_collate();
+	    $sql = "CREATE TABLE $table_name (
+	        id mediumint(9) NOT NULL AUTO_INCREMENT,
+	        url varchar(255) NOT NULL,
+	        PRIMARY KEY (id)
+	    ) $charset_collate;";
+	    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	    dbDelta($sql);
+
+	    // Insert the crawl results into the table
+	    foreach ($results as $result) {
+	        $wpdb->insert(
+	            $table_name,
+	            array(
+	                'url' => $result
+	            ),
+	            array(
+	                '%s'
+	            )
+	        );
+	    }
     }
 
     // Save the home page's .php file as a .html file
