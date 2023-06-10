@@ -158,6 +158,19 @@ class EasySEOAdminOptions{
 	    }
     }
 
+    // Get the stored crawl results from the database
+	function get_stored_results() {
+	    global $wpdb;
+
+	    // Create a table name based on the WordPress database prefix
+	    $table_name = $wpdb->prefix . 'crawl_results';
+
+	    // Query the database to retrieve the crawl results
+	    $results = $wpdb->get_col("SELECT url FROM $table_name");
+
+	    return $results;
+	}
+
     // Save the home page's .php file as a .html file
     public function save_as_html( $url ) {
         // Implementation for saving as .html file
