@@ -18,7 +18,7 @@
 
 defined('ABSPATH') or die('You are not authorized to view this page');
 
-require_once( dirname( __FILE__).'/inc/classes/admin/class-admin-options.php' );
+require_once( dirname( __FILE__).'/class-admin-options.php' );
 
 if( class_exists('EasySEOAdminOptions') ){
 	new EasySEOAdminOptions();
