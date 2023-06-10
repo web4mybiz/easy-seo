@@ -171,6 +171,35 @@ class EasySEOAdminOptions{
     // Display the crawl results on the admin page
     public function display_results() {
         // Implementation for displaying results
+
+        // Retrieve the stored crawl results from the database
+	    $results = $this->get_stored_results();
+
+	    if (empty($results)) {
+	        echo '<p>No results found.</p>';
+	        return;
+	    }
+
+	    echo '<h2>Crawl Results</h2>';
+
+	    // Output the crawl results as a table
+	    echo '<table class="wp-list-table widefat">';
+	    echo '<thead>';
+	    echo '<tr>';
+	    echo '<th>URL</th>';
+	    echo '</tr>';
+	    echo '</thead>';
+	    echo '<tbody>';
+
+	    foreach ($results as $result) {
+	        echo '<tr>';
+	        echo '<td>' . esc_html($result) . '</td>';
+	        echo '</tr>';
+	    }
+
+	    echo '</tbody>';
+	    echo '</table>';
+
     }
 
 	// Crawl task 
