@@ -20,6 +20,10 @@ defined('ABSPATH') or die('You are not authorized to view this page');
 
 require_once( dirname( __FILE__).'/class-admin-options.php' );
 
+
 if( class_exists('EasySEOAdminOptions') ){
+
+	// Instantiate the plugin class
 	new EasySEOAdminOptions();
+	
 }
