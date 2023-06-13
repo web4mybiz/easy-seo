@@ -1,8 +1,11 @@
 {
     "name": "rizwan/easy-seo",
+    "description": "Simple plugin to improve review and improve SEO.",
+    "type": "project",
+    "license": "GPL",
     "autoload": {
         "psr-4": {
-            "Rizwan\\EasySeo\\": "src/"
+            "Easy_Seo\\": "./inc"
         }
     },
     "authors": [
@@ -11,8 +14,6 @@
             "email": "web4mybiz@gmail.com"
         }
     ],
-    "require": {},
-    "autoload": {
-    		"psr-4" : { "Class\\": "./inc" }
-    }
+    "minimum-stability": "dev",
+    "require": {}
 }
