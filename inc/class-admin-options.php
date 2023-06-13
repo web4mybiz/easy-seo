@@ -1,20 +1,25 @@
 <?php
-class EasySEOAdminOptions{
+class EasySEOAdminOptions
+{
 	
 	// constructor
-	public function __construct(){
+	public function __construct()
+	{
 		add_action( 'admin_menu', array( $this, 'easy_seo_admin_menu') );
 		add_action( 'crawl_task_hook', array( $this, 'crawl_task' ) );
 		add_action( 'crawl_recurring_task_hook', array( $this, 'crawl_recurring_task' ) );
+
 	}
 
 	// Add the admin  menu
-	public function easy_seo_admin_menu(){
+	public function easy_seo_admin_menu()
+	{
 		add_options_page( 'Easy SEO', 'Easy SEO', 'manage_options', 'easy-seo', array( $this, 'easy_seo_admin_page') );
 	}
 
 	// Render admin page
-	function easy_seo_admin_page(){
+	function easy_seo_admin_page()
+	{
 		// Render admin page content
 		if( isset( $_POST['crawl_trigger'] ) ){
 			// Execute trigger
@@ -37,7 +42,8 @@ class EasySEOAdminOptions{
 	}
 
 	// Function that trigger the crawl process
-	function trigger_crawl(){
+	function trigger_crawl()
+	{
 
 		// Delete the results from the last crawl if they exist
         $this->delete_previous_results();
@@ -71,26 +77,29 @@ class EasySEOAdminOptions{
 
 
 	// Delete the results from the last crawl if they exist
-    public function delete_previous_results() {
+    public function delete_previous_results()
+    {
         // Implementation for deleting previous results
     }
 
     // Delete the sitemap.html file if it exists
-    public function delete_sitemap_file() {
+    public function delete_sitemap_file()
+    {
         // Implementation for deleting sitemap.html file
     }
 
     // Extract all internal hyperlinks (results)
-    public function extract_hyperlinks( $url ) {
+    public function extract_hyperlinks( $url )
+    {
         // Implementation for extracting hyperlinks
         $home_url = $url;
-	    $internal_links = array();
+	    $results = array();
 
 	    // Fetch the content of the home page
 	    $response = wp_remote_get( $home_url );
 	    if ( is_wp_error( $response ) ) {
 	        // Handle the error here
-	        return $internal_links;
+	        return $results;
 	    }
 
 	    // Retrieve the response body
@@ -115,34 +124,24 @@ class EasySEOAdminOptions{
 
 	        // Check if the href is an internal link
 	        if ( strpos( $href, $home_url ) === 0 ) {
-	            $internal_links[] = $href;
+	            $results[] = $href;
 	        }
 	    }
 
-	    return $internal_links;
+	    return $results;
 
     }
 
     // Store results temporarily in the database
-    public function store_results( $internal_links ) {
+    public function store_results( $results ) 
+    {
         // Implementation for storing results
         global $wpdb;
 
+	    $this->create_crawl_results_table();
+
 	    // Create a table name based on the WordPress database prefix
 	    $table_name = $wpdb->prefix . 'crawl_results';
-
-	    // Drop the table if it already exists (optional)
-	    $wpdb->query("DROP TABLE IF EXISTS $table_name");
-
-	    // Create the table to store the crawl results
-	    $charset_collate = $wpdb->get_charset_collate();
-	    $sql = "CREATE TABLE $table_name (
-	        id mediumint(9) NOT NULL AUTO_INCREMENT,
-	        url varchar(255) NOT NULL,
-	        PRIMARY KEY (id)
-	    ) $charset_collate;";
-	    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	    dbDelta($sql);
 
 	    // Insert the crawl results into the table
 	    foreach ($results as $result) {
@@ -159,7 +158,8 @@ class EasySEOAdminOptions{
     }
 
     // Get the stored crawl results from the database
-	function get_stored_results() {
+	function get_stored_results() 
+	{
 	    global $wpdb;
 
 	    // Create a table name based on the WordPress database prefix
@@ -171,18 +171,53 @@ class EasySEOAdminOptions{
 	    return $results;
 	}
 
+
+	// Create the crawl_results table
+	function create_crawl_results_table() 
+	{
+	    global $wpdb;
+
+	    // Create a table name based on the WordPress database prefix
+	    $table_name = $wpdb->prefix . 'crawl_results';
+
+	    // Create the table if it doesn't exist
+	    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") !== $table_name) {
+	        $charset_collate = $wpdb->get_charset_collate();
+	        $sql = "CREATE TABLE $table_name (
+	            id mediumint(9) NOT NULL AUTO_INCREMENT,
+	            url varchar(255) NOT NULL,
+	            PRIMARY KEY (id)
+	        ) $charset_collate;";
+	        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	        dbDelta($sql);
+	    }
+	}
+
+	// Delete the crawl_results table
+	function delete_crawl_results_table() 
+	{
+	    global $wpdb;
+
+	    // Drop the crawl_results table
+	    $table_name = $wpdb->prefix . 'crawl_results';
+	    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+	}
+
     // Save the home page's .php file as a .html file
-    public function save_as_html( $url ) {
+    public function save_as_html( $url ) 
+    {
         // Implementation for saving as .html file
     }
 
     // Create a sitemap.html file that shows the results as a sitemap list structure
-    public function create_sitemap() {
+    public function create_sitemap() 
+    {
         // Implementation for creating sitemap.html file
     }
 
     // Display the crawl results on the admin page
-    public function display_results() {
+    public function display_results() 
+    {
         // Implementation for displaying results
 
         // Retrieve the stored crawl results from the database
@@ -215,16 +250,39 @@ class EasySEOAdminOptions{
 
     }
 
+
 	// Crawl task 
-    public function crawl_task() {
+    public function crawl_task() 
+    {
         // Perform the crawl
         // Save the results
     }
 
     // Recurring crawl task 
-    public function crawl_recurring_task() {
+    public function crawl_recurring_task() 
+    {
         // Perform the crawl
         // Save the  results
     }
+
+    // Activation hook callback
+	function crawl_plugin_activation() {
+	    // Create the crawl_results table
+	    create_crawl_results_table();
+	}
+
+    // Deactivation hook callback
+	function crawl_plugin_deactivation() {
+	    // Delete the crawl_results table
+	    delete_crawl_results_table();
+	}
+
+	/*
+	// Register activation hook
+	register_activation_hook( __FILE__, 'crawl_plugin_activation' );
+
+	// Register deactivation hook
+	register_deactivation_hook( __FILE__, 'crawl_plugin_deactivation' );
+	*/
 
 }
