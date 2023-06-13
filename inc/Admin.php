@@ -1,5 +1,9 @@
 <?php
-class EasySEOAdminOptions
+
+namespace Inc;
+
+
+class Admin
 {
 	
 	// constructor
@@ -55,10 +59,10 @@ class EasySEOAdminOptions
         $root_url = home_url();
 
         // Extract all internal hyperlinks (results)
-        $results = $this->extract_hyperlinks( $root_url );
+        $results = \Inc\Dom::extract_hyperlinks( $root_url );
 
         // Store results temporarily in the database
-        $this->store_results( $results );
+        \Inc\Database::store_results( $results );
 
         // Save the home page's .php file as a .html file
         $this->save_as_html( $root_url );
@@ -88,120 +92,6 @@ class EasySEOAdminOptions
         // Implementation for deleting sitemap.html file
     }
 
-    // Extract all internal hyperlinks (results)
-    public function extract_hyperlinks( $url )
-    {
-        // Implementation for extracting hyperlinks
-        $home_url = $url;
-	    $results = array();
-
-	    // Fetch the content of the home page
-	    $response = wp_remote_get( $home_url );
-	    if ( is_wp_error( $response ) ) {
-	        // Handle the error here
-	        return $results;
-	    }
-
-	    // Retrieve the response body
-	    $body = wp_remote_retrieve_body( $response );
-
-	    // Create a DOM document
-	    $dom = new DOMDocument();
-	    libxml_use_internal_errors( true );
-
-	    // Load the HTML content into the DOM document
-	    $dom->loadHTML( $body );
-
-	    // Create a DOM XPath object to query the document
-	    $xpath = new DOMXPath( $dom );
-
-	    // Query all anchor tags with an href attribute
-	    $anchors = $xpath->query( '//a[@href]' );
-
-	    // Iterate through the anchor tags
-	    foreach ( $anchors as $anchor ) {
-	        $href = $anchor->getAttribute( 'href' );
-
-	        // Check if the href is an internal link
-	        if ( strpos( $href, $home_url ) === 0 ) {
-	            $results[] = $href;
-	        }
-	    }
-
-	    return $results;
-
-    }
-
-    // Store results temporarily in the database
-    public function store_results( $results ) 
-    {
-        // Implementation for storing results
-        global $wpdb;
-
-	    $this->create_crawl_results_table();
-
-	    // Create a table name based on the WordPress database prefix
-	    $table_name = $wpdb->prefix . 'crawl_results';
-
-	    // Insert the crawl results into the table
-	    foreach ($results as $result) {
-	        $wpdb->insert(
-	            $table_name,
-	            array(
-	                'url' => $result
-	            ),
-	            array(
-	                '%s'
-	            )
-	        );
-	    }
-    }
-
-    // Get the stored crawl results from the database
-	function get_stored_results() 
-	{
-	    global $wpdb;
-
-	    // Create a table name based on the WordPress database prefix
-	    $table_name = $wpdb->prefix . 'crawl_results';
-
-	    // Query the database to retrieve the crawl results
-	    $results = $wpdb->get_col("SELECT url FROM $table_name");
-
-	    return $results;
-	}
-
-
-	// Create the crawl_results table
-	function create_crawl_results_table() 
-	{
-	    global $wpdb;
-
-	    // Create a table name based on the WordPress database prefix
-	    $table_name = $wpdb->prefix . 'crawl_results';
-
-	    // Create the table if it doesn't exist
-	    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") !== $table_name) {
-	        $charset_collate = $wpdb->get_charset_collate();
-	        $sql = "CREATE TABLE $table_name (
-	            id mediumint(9) NOT NULL AUTO_INCREMENT,
-	            url varchar(255) NOT NULL,
-	            PRIMARY KEY (id)
-	        ) $charset_collate;";
-	        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	        dbDelta($sql);
-	    }
-	}
-
-	// Delete the crawl_results table
-	function delete_crawl_results_table() 
-	{
-	    global $wpdb;
-
-	    // Drop the crawl_results table
-	    $table_name = $wpdb->prefix . 'crawl_results';
-	    $wpdb->query("DROP TABLE IF EXISTS $table_name");
-	}
 
     // Save the home page's .php file as a .html file
     public function save_as_html( $url ) 
@@ -221,7 +111,7 @@ class EasySEOAdminOptions
         // Implementation for displaying results
 
         // Retrieve the stored crawl results from the database
-	    $results = $this->get_stored_results();
+	    $results = \Inc\Database::get_stored_results();
 
 	    if (empty($results)) {
 	        echo '<p>No results found.</p>';

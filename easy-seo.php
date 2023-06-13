@@ -18,12 +18,18 @@
 
 defined('ABSPATH') or die('You are not authorized to view this page');
 
-require_once( dirname( __FILE__).'/inc/class-admin-options.php' );
+// Composer autoload.
+if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+	require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+}
 
+use Inc\Admin;
+use Inc\Database;
+use Inc\Dom;
 
-if( class_exists('EasySEOAdminOptions') ){
+if( class_exists('Inc\Admin') ){
 
 	// Instantiate the plugin class
-	new EasySEOAdminOptions();
+	new Inc\Admin();
 
 }
