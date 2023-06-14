@@ -5,13 +5,14 @@ namespace Inc;
 
 class Admin
 {
-	
+	private $database1;
 	// constructor
 	public function __construct()
 	{
 		add_action( 'admin_menu', array( $this, 'easy_seo_admin_menu') );
 		add_action( 'crawl_task_hook', array( $this, 'crawl_task' ) );
 		add_action( 'crawl_recurring_task_hook', array( $this, 'crawl_recurring_task' ) );
+		$this->database1 = new \Inc\Database();
 
 	}
 
@@ -62,7 +63,8 @@ class Admin
         $results = \Inc\Dom::extract_hyperlinks( $root_url );
 
         // Store results temporarily in the database
-        \Inc\Database::store_results( $results );
+        $database = new \Inc\Database();
+        $database->store_results( $results );
 
         // Save the home page's .php file as a .html file
         $this->save_as_html( $root_url );
@@ -111,7 +113,8 @@ class Admin
         // Implementation for displaying results
 
         // Retrieve the stored crawl results from the database
-	    $results = \Inc\Database::get_stored_results();
+        $database = new \Inc\Database();
+	    $results = $database->get_stored_results();
 
 	    if (empty($results)) {
 	        echo '<p>No results found.</p>';
@@ -158,21 +161,25 @@ class Admin
     // Activation hook callback
 	function crawl_plugin_activation() {
 	    // Create the crawl_results table
-	    create_crawl_results_table();
+	    $database1->create_crawl_results_table();
 	}
 
     // Deactivation hook callback
 	function crawl_plugin_deactivation() {
 	    // Delete the crawl_results table
-	    delete_crawl_results_table();
+	    $database1->delete_crawl_results_table();
+	}
+	
+	// Trigger a function on plugin activation
+	function activate(){
+		// Register activation hook
+		register_activation_hook( __FILE__, array( $this, 'crawl_plugin_activation') );
 	}
 
-	/*
-	// Register activation hook
-	register_activation_hook( __FILE__, 'crawl_plugin_activation' );
-
-	// Register deactivation hook
-	register_deactivation_hook( __FILE__, 'crawl_plugin_deactivation' );
-	*/
+	// Trigger a function on plugin deactivation
+	function deactivate(){
+		// Register deactivation hook
+		register_deactivation_hook( __FILE__, array( $this, 'crawl_plugin_deactivation') );
+	}
 
 }

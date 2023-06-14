@@ -23,8 +23,8 @@ if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	require_once dirname( __FILE__ ) . '/vendor/autoload.php';
 }
 
-use Inc\Admin;
 use Inc\Database;
+use Inc\Admin;
 use Inc\Dom;
 
 if( class_exists('Inc\Admin') ){

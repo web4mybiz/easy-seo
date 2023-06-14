@@ -10,13 +10,13 @@ class Database
 
 
     // Store results temporarily in the database
-    public static function store_results( $results ) 
+    public function store_results( $results ) 
     {
         // Implementation for storing results
         global $wpdb;
 
-	    Database::create_crawl_results_table();
-
+	    $this->create_crawl_results_table();
+		$this->remove_crawl_results_table();
 	    // Create a table name based on the WordPress database prefix
 	    $table_name = $wpdb->prefix . 'crawl_results';
 
@@ -35,7 +35,7 @@ class Database
     }
 
     // Get the stored crawl results from the database
-	public static function get_stored_results() 
+	public function get_stored_results() 
 	{
 	    global $wpdb;
 
@@ -50,7 +50,7 @@ class Database
 
 
 	// Create the crawl_results table
-	public static function create_crawl_results_table() 
+	public function create_crawl_results_table() 
 	{
 	    global $wpdb;
 
@@ -63,6 +63,7 @@ class Database
 	        $sql = "CREATE TABLE $table_name (
 	            id mediumint(9) NOT NULL AUTO_INCREMENT,
 	            url varchar(255) NOT NULL,
+	            date DATE,
 	            PRIMARY KEY (id)
 	        ) $charset_collate;";
 	        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -78,6 +79,16 @@ class Database
 	    // Drop the crawl_results table
 	    $table_name = $wpdb->prefix . 'crawl_results';
 	    $wpdb->query("DROP TABLE IF EXISTS $table_name");
+	}
+
+	// Delete the crawl_results table
+	function remove_crawl_results_table() 
+	{
+	    global $wpdb;
+
+	    // Drop the crawl_results table
+	    $table_name = $wpdb->prefix . 'crawl_results';
+	    $wpdb->query("TRUNCATE TABLE $table_name");
 	}
 	
 }
