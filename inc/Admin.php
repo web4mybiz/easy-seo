@@ -2,17 +2,15 @@
 
 namespace Inc;
 
-
 class Admin
 {
-	private $database1;
+	
 	// constructor
 	public function __construct()
 	{
 		add_action( 'admin_menu', array( $this, 'easy_seo_admin_menu') );
 		add_action( 'crawl_task_hook', array( $this, 'crawl_task' ) );
 		add_action( 'crawl_recurring_task_hook', array( $this, 'crawl_recurring_task' ) );
-		$this->database1 = new \Inc\Database();
 
 	}
 
@@ -128,13 +126,15 @@ class Admin
 	    echo '<thead>';
 	    echo '<tr>';
 	    echo '<th>URL</th>';
+	    echo '<th>Crawled Time</th>';
 	    echo '</tr>';
 	    echo '</thead>';
 	    echo '<tbody>';
 
 	    foreach ($results as $result) {
 	        echo '<tr>';
-	        echo '<td>' . esc_html($result) . '</td>';
+	        echo '<td>' . esc_html($result->url) . '</td>';
+	        echo '<td>' . esc_html($result->date) . '</td>';
 	        echo '</tr>';
 	    }
 
@@ -157,29 +157,5 @@ class Admin
         // Perform the crawl
         // Save the  results
     }
-
-    // Activation hook callback
-	function crawl_plugin_activation() {
-	    // Create the crawl_results table
-	    $database1->create_crawl_results_table();
-	}
-
-    // Deactivation hook callback
-	function crawl_plugin_deactivation() {
-	    // Delete the crawl_results table
-	    $database1->delete_crawl_results_table();
-	}
-	
-	// Trigger a function on plugin activation
-	function activate(){
-		// Register activation hook
-		register_activation_hook( __FILE__, array( $this, 'crawl_plugin_activation') );
-	}
-
-	// Trigger a function on plugin deactivation
-	function deactivate(){
-		// Register deactivation hook
-		register_deactivation_hook( __FILE__, array( $this, 'crawl_plugin_deactivation') );
-	}
 
 }

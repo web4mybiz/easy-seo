@@ -4,9 +4,6 @@ namespace Inc;
 
 class Database
 {
-	function __construct(){
-
-	}
 
 
     // Store results temporarily in the database
@@ -25,9 +22,11 @@ class Database
 	        $wpdb->insert(
 	            $table_name,
 	            array(
-	                'url' => $result
+	                'url' 	=> $result,
+	                'date'	=> date('Y-m-d H:i:s')
 	            ),
 	            array(
+	                '%s',
 	                '%s'
 	            )
 	        );
@@ -43,14 +42,14 @@ class Database
 	    $table_name = $wpdb->prefix . 'crawl_results';
 
 	    // Query the database to retrieve the crawl results
-	    $results = $wpdb->get_col("SELECT url FROM $table_name");
+	    $results = $wpdb->get_results("SELECT * FROM $table_name");
 
 	    return $results;
 	}
 
 
 	// Create the crawl_results table
-	public function create_crawl_results_table() 
+	public static function create_crawl_results_table() 
 	{
 	    global $wpdb;
 
@@ -63,7 +62,7 @@ class Database
 	        $sql = "CREATE TABLE $table_name (
 	            id mediumint(9) NOT NULL AUTO_INCREMENT,
 	            url varchar(255) NOT NULL,
-	            date DATE,
+	            date datetime DEFAULT NULL,
 	            PRIMARY KEY (id)
 	        ) $charset_collate;";
 	        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -72,7 +71,7 @@ class Database
 	}
 
 	// Delete the crawl_results table
-	function delete_crawl_results_table() 
+	public static function delete_crawl_results_table() 
 	{
 	    global $wpdb;
 
@@ -82,13 +81,25 @@ class Database
 	}
 
 	// Delete the crawl_results table
-	function remove_crawl_results_table() 
+	public static function remove_crawl_results_table() 
 	{
 	    global $wpdb;
 
 	    // Drop the crawl_results table
 	    $table_name = $wpdb->prefix . 'crawl_results';
 	    $wpdb->query("TRUNCATE TABLE $table_name");
+	}
+
+	// Activation hook callback
+	public static function crawl_plugin_activation() {
+	    // Create the crawl_results table
+	    Database::create_crawl_results_table();
+	}
+
+    // Deactivation hook callback
+	public static function crawl_plugin_deactivation() {
+	    // Delete the crawl_results table
+	    Database::delete_crawl_results_table();
 	}
 	
 }
