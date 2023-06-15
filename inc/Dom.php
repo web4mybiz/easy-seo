@@ -4,12 +4,14 @@ namespace Inc;
 
 class Dom
 {
+	public static $sitemap;
+
 	// Extract all internal hyperlinks (results)
     public static function extract_hyperlinks( $url )
     {
         // Implementation for extracting hyperlinks
         $home_url = $url;
-	    $results = array();
+	    $results = ['Home' => $url];
 
 	    // Fetch the content of the home page
 	    $response = wp_remote_get( $home_url );
@@ -34,17 +36,56 @@ class Dom
 	    // Query all anchor tags with an href attribute
 	    $anchors = $xpath->query( '//a[@href]' );
 
+	    //self::$sitemap .= '-<a href="'.$url.'">Home</a><br>';
+
 	    // Iterate through the anchor tags
 	    foreach ( $anchors as $anchor ) {
+	    	// Get the link url
 	        $href = $anchor->getAttribute( 'href' );
+	        //Get the link text
+	        $text = $anchor->textContent;
 
-	        // Check if the href is an internal link
-	        if ( strpos( $href, $home_url ) === 0 ) {
-	            $results[] = $href;
-	        }
+	        //Assign links to an array
+	        $results[$text] = $href;
+
 	    }
 
+
+	    // Remove duplicates
+	    $results = array_unique($results);
+
+	    // Loop through the array to create sitemap with list structure
+	    foreach ($results as $text=>$link) {
+
+	    	// Check if the href is an internal link and add the proper dash
+	    	if ( strpos( $link, $home_url ) === 0 ) {
+	            self::$sitemap .= '-<a href="'.$link.'">'.$text.'</a><br>';
+	        }else{
+	        	self::$sitemap .= '--<a href="'.$link.'">'.$text.'</a><br>';
+	        }
+
+	    }
+	    
+
+	    Dom::create_sitemap(self::$sitemap);
+
 	    return $results;
+
+    }
+
+    //Create sitemap.html, remove the old one if exists
+    public static function create_sitemap($sitemap){
+
+    	
+    	$file_name = 'sitemap.html';
+
+        //Remove sitemap.html if exists
+        if (file_exists( plugin_dir_path( __DIR__ ) . $file_name )) {
+        	unlink( plugin_dir_path( __DIR__ ) . $file_name );	
+        }
+
+        //Generate sitemap.html file
+        file_put_contents( plugin_dir_path( __DIR__ ) . $file_name, $sitemap, FILE_APPEND);
 
     }
 }

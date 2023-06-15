@@ -18,11 +18,12 @@ class Database
 	    $table_name = $wpdb->prefix . 'crawl_results';
 
 	    // Insert the crawl results into the table
-	    foreach ($results as $result) {
+	    foreach ($results as $text=>$link) {
 	        $wpdb->insert(
 	            $table_name,
 	            array(
-	                'url' 	=> $result,
+	                'title' 	=> $text,
+	                'url' 	=> $link,
 	                'date'	=> date('Y-m-d H:i:s')
 	            ),
 	            array(
@@ -61,6 +62,7 @@ class Database
 	        $charset_collate = $wpdb->get_charset_collate();
 	        $sql = "CREATE TABLE $table_name (
 	            id mediumint(9) NOT NULL AUTO_INCREMENT,
+	            title varchar(255) NOT NULL,
 	            url varchar(255) NOT NULL,
 	            date datetime DEFAULT NULL,
 	            PRIMARY KEY (id)
