@@ -54,18 +54,20 @@ class Dom
 	    // Remove duplicates
 	    $results = array_unique($results);
 
+	    self::$sitemap = '<ul style="font-family: arial; font-size: 14px;">';
 	    // Loop through the array to create sitemap with list structure
 	    foreach ($results as $text=>$link) {
 
 	    	// Check if the href is an internal link and add the proper dash
 	    	if ( strpos( $link, $home_url ) === 0 ) {
-	            self::$sitemap .= '-<a href="'.$link.'">'.$text.'</a><br>';
+	            self::$sitemap .= '<li><a href="'.$link.'" style="color: #666;">'.$text.'</a></li>';
 	        }else{
-	        	self::$sitemap .= '--<a href="'.$link.'">'.$text.'</a><br>';
+	        	self::$sitemap .= '<li class="sub" style="margin-left: 15px;"><a href="'.$link.'" style="color: #666;">'.$text.'</a></li>';
 	        }
 
 	    }
 	    
+	    self::$sitemap .= '</ul>';
 
 	    Dom::create_sitemap(self::$sitemap);
 

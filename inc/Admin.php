@@ -10,6 +10,8 @@ class Admin
 		add_action( 'admin_menu', array( $this, 'easy_seo_admin_menu') );
 		add_action( 'crawl_task_hook', array( $this, 'crawl_task' ) );
 		add_action( 'set_recurring_crawl_task', array( $this, 'recurring_crawl_task' ) );
+		add_action( 'wp_footer', array( $this, 'sitemap_link' ) );
+
 
 		add_filter( "plugin_action_links_".PLUGIN_BASE_NAME, array( $this, 'settings_link' ) );
 
@@ -141,5 +143,14 @@ class Admin
         // Perform the crawl in the scheduled time.
         $this->trigger_crawl();
     }
+
+	function sitemap_link() {
+	    // Create the sitemap link
+	    $link_url = PLUGIN_DIR_URL.'sitemap.html';
+	    $link_text = 'Sitemap';
+
+	    echo '<div class="footer-sitemap-link" style="padding: 10px; text-align: center;"><a href="' . esc_url( $link_url ) . '" target="_blank">' . esc_html( $link_text ) . '</a></div>';
+
+	}
 
 }
