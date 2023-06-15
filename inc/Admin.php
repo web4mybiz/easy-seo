@@ -4,7 +4,6 @@ namespace Inc;
 
 class Admin
 {
-	public $plugin;
 	// constructor
 	public function __construct()
 	{
@@ -12,8 +11,7 @@ class Admin
 		add_action( 'crawl_task_hook', array( $this, 'crawl_task' ) );
 		add_action( 'set_recurring_crawl_task', array( $this, 'recurring_crawl_task' ) );
 
-		$this->plugin = 'easy-seo/easy-seo.php';
-		add_filter( "plugin_action_links_$this->plugin", array( $this, 'settings_link' ) );
+		add_filter( "plugin_action_links_".PLUGIN_BASE_NAME, array( $this, 'settings_link' ) );
 
 	}
 
@@ -45,12 +43,16 @@ class Admin
 		// Easy SEO Crawler settings page
         echo '<div class="wrap">';
         echo '<h1>Crawler Settings</h1>';
+
+        if (isset($_GET['saved'])) 
+        	echo '<div class="updated"><p>' . __('Success! Links generated.') . '</p></div>';
+
         echo '<form method="post" action="">';
         echo '<p>Click the button below to trigger the crawl:</p>';
         echo '<input type="submit" name="crawl_trigger" class="button button-primary" value="Trigger Crawl">';
         echo '</form>';
 
-        echo '<p><a href="options-general.php?page=easy-seo&crawl_results=1">View Results</a></p>';
+        echo '<p><a href="options-general.php?page=easy-seo&crawl_results=1">View Results</a> | <a href="'.PLUGIN_DIR_URL.'sitemap.html" target="_blank">View Sitemap</a></p>';
 
         }else{
         	// Display the crawl results
@@ -77,10 +79,13 @@ class Admin
 
         // Delete the results from the last crawl if they exist
         //Save the results
-        $database->store_results( $results );
+        $stored = $database->store_results( $results );
+
+        wp_redirect('options-general.php?page=easy-seo&saved=1');
+		exit;
 
         // Save the home page's .php file as a .html file
-        $this->save_as_html( $root_url );
+        //$this->save_as_html( $root_url );
 
 	}
 

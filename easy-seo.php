@@ -18,6 +18,13 @@
 
 defined('ABSPATH') or die('You are not authorized to view this page');
 
+if ( !defined( 'PLUGIN_BASE_NAME' ) ) {
+    define( 'PLUGIN_BASE_NAME', plugin_basename( __FILE__ ) );
+}
+if ( !defined( 'PLUGIN_DIR_URL' ) ) {
+    define( 'PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ) );
+}
+
 // Composer autoload.
 if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	require_once dirname( __FILE__ ) . '/vendor/autoload.php';

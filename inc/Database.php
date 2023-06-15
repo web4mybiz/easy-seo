@@ -32,6 +32,8 @@ class Database
 	            )
 	        );
 	    }
+
+	    return true;
     }
 
     // Get the stored crawl results from the database
