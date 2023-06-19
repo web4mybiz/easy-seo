@@ -21,7 +21,9 @@
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0.2",
         "phpcompatibility/php-compatibility": "*",
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpunit/phpunit": "^9.6",
+        "phpunitgen/console": "^1.5"
     },
 	"prefer-stable" : true,
 	"scripts": {
