@@ -2,7 +2,7 @@
 /*
  * Plugin Name:       Easy SEO
  * Plugin URI:        https://github.com/web4mybiz/easy-seo
- * Description:       Simple plugin to improve review and improve SEO.
+ * Description:       Simple plugin to review and improve SEO.
  * Version:           1.0.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
